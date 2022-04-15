@@ -1,0 +1,15 @@
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\Shop.exe.config
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\Shop.exe
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\Shop.pdb
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.csprojAssemblyReference.cache
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\MainWindow.g.cs
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\App.g.cs
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop_MarkupCompile.cache
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop_MarkupCompile.lref
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\MainWindow.baml
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.g.resources
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.Properties.Resources.resources
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.csproj.GenerateResource.cache
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.csproj.CoreCompileInputs.cache
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.exe
+E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\Shop.pdb
