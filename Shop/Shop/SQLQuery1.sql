@@ -15,3 +15,4 @@ values (N'Карлов', N'Марк', N'Карлович', '890900000001', 'Iamm
 
 select * from client_info
 
+select * from products

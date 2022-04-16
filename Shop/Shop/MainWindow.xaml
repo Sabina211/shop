@@ -13,6 +13,48 @@
                  Text="{Binding AccessConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="577"/>
         <Label Content="Connectong string/State &#xD;&#xA;for MS SQL" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="170" Height="63"/>
         <Label Content="Connectong string/State &#xD;&#xA;for Access" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Width="170" Height="63"/>
+        <DataGrid x:Name="gridView"
+                  DataContext="{Binding ClientsData}"
+                  IsSynchronizedWithCurrentItem="True"
+                  SelectionMode="Single" 
+                  AutoGenerateColumns="False" 
+                  ItemsSource="{Binding}"
+                  IsReadOnly="False" 
+                  Margin="0,189,101,21"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="id" 
+                                    Binding="{Binding id}" 
+                                    Header="Id" 
+                                    IsReadOnly="True"/>
 
+                <DataGridTextColumn x:Name="surname" 
+                                    Binding="{Binding surname}" 
+                                    Header="Фамилия"/>
+                
+                <DataGridTextColumn x:Name="first_name" 
+                                    Binding="{Binding first_name}" 
+                                    Header="Имя"/>
+
+                <DataGridTextColumn x:Name="patronymic" 
+                                    Binding="{Binding patronymic}" 
+                                    Header="Отчество"/>
+
+                <DataGridTextColumn x:Name="phone_number" 
+                                    Binding="{Binding phone_number}" 
+                                    Header="Телефон"/>
+
+                <DataGridTextColumn x:Name="email" 
+                                    Binding="{Binding email}" 
+                                    Header="Почта"/>
+
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
+                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
     </Grid>
 </Window>

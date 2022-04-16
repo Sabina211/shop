@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,6 +12,19 @@ namespace Shop
 {
     internal class MainWindowVM : Bindable
     {
+        SqlDataAdapter dataAdapterMS;
+        DataTable dataTableMS;
+        private object clientsData;
+        public object ClientsData 
+        {
+            get => clientsData;
+            set
+            {
+                clientsData = value;
+                OnPropertyChanged("ClientsData");
+            }
+        }
+
         private string msSqlConnectingString;
         public string MsSqlConnectingString
         {
@@ -34,34 +48,48 @@ namespace Shop
 
         public MainWindowVM()
         {
-            Task taskMS = new Task(ConnectToMSSqlDB);
-            taskMS.Start();
-
-            Task taskAccess = new Task(ConnectToAccessDB);
-            taskAccess.Start();
-        }
-
-        private void ConnectToMSSqlDB()
-        {
-            SqlConnectionStringBuilder strCon = new SqlConnectionStringBuilder()
+            SqlConnectionStringBuilder connectionStringMS = new SqlConnectionStringBuilder()
             {
                 DataSource = @"(localdb)\MSSQLLocalDB", //имя сервера источника данных, к которому будем подключаться
                 InitialCatalog = "MSSQLLocalDB", //файл, к которому планируем подключаться
                 IntegratedSecurity = true, //способ авторизации
                 Pooling = false
             };
-            SqlConnection sqlConnection = new SqlConnection { ConnectionString = strCon.ConnectionString };
-            MsSqlConnectingString = strCon.ConnectionString;
+            SqlConnection sqlConnection = new SqlConnection { ConnectionString = connectionStringMS.ConnectionString };
+
+            Task taskMS = new Task(ConnectToMSSqlDB, connectionStringMS);
+            taskMS.Start();
+
+            Task taskAccess = new Task(ConnectToAccessDB);
+            taskAccess.Start();
+
+            dataTableMS = new DataTable();
+            dataAdapterMS = new SqlDataAdapter();
+
+            #region select
+            var sqlClientsMS = @"select * from client_info";
+            dataAdapterMS.SelectCommand = new SqlCommand(sqlClientsMS, sqlConnection);
+            #endregion
+
+            dataAdapterMS.Fill(dataTableMS);
+            ClientsData = dataTableMS.DefaultView;
+        }
+
+        private void ConnectToMSSqlDB(object strCon)
+        {
+            SqlConnectionStringBuilder stringConnection = strCon as SqlConnectionStringBuilder;
+            SqlConnection sqlConnection = new SqlConnection { ConnectionString = stringConnection.ConnectionString };
+            MsSqlConnectingString = stringConnection.ConnectionString;
             using (sqlConnection)
             {
                 try
                 {
                     sqlConnection.Open();
-                    MsSqlConnectingString = $"{strCon.ConnectionString} \nState = {sqlConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
+                    MsSqlConnectingString = $"{stringConnection.ConnectionString} \nState = {sqlConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
                 }
                 catch (Exception e)
                 {
-                    MsSqlConnectingString = $"{strCon.ConnectionString} \nState = {e.Message}";
+                    MsSqlConnectingString = $"{stringConnection.ConnectionString} \nState = {e.Message}";
                 }
             }
         }

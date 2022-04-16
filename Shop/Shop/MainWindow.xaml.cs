@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +26,14 @@ namespace Shop
         {
             InitializeComponent();
             DataContext = new MainWindowVM();
+        }
+
+        private void MenuItemDeleteClick(object sender, RoutedEventArgs e)
+        {
+        }
+        private void MenuItemAddClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
