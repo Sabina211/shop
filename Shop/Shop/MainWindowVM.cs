@@ -14,6 +14,10 @@ namespace Shop
     {
         SqlDataAdapter dataAdapterMS;
         DataTable dataTableMS;
+
+        OleDbDataAdapter dataAdapterAccess;
+        DataTable dataTableAccess;
+
         private object clientsData;
         public object ClientsData 
         {
@@ -25,7 +29,73 @@ namespace Shop
             }
         }
 
-        private string msSqlConnectingString;
+        private object productsData;
+        public object ProductsData
+        {
+            get => productsData;
+            set
+            {
+                productsData = value;
+                OnPropertyChanged("ProductsData");
+            }
+        }
+
+        private object clientsProductsData;
+        public object ClientsProductsData
+        {
+            get => clientsProductsData;
+            set
+            {
+                clientsProductsData = value;
+                OnPropertyChanged("ClientsProductsData");
+            }
+        }
+
+        private DataRowView selectedClient;
+        public DataRowView SelectedClient
+        {
+            get { return selectedClient; }
+            set
+            {
+                selectedClient = value;
+                OnPropertyChanged("SelectedClient");
+                OnPropertyChanged("CurrentClient");
+                /*if (selectedClient != null)
+                {
+                    Client testClient = new Client();
+                    testClient.Id = Convert.ToInt32(selectedClient.Row.ItemArray[0].ToString());
+                    testClient.Surname = selectedClient.Row.ItemArray[1].ToString();
+                    testClient.FirstName = selectedClient.Row.ItemArray[2].ToString();
+                    testClient.Patronymic = selectedClient.Row.ItemArray[3].ToString();
+                    testClient.PhoneNumber = selectedClient.Row.ItemArray[4].ToString();
+                    testClient.Email = selectedClient.Row.ItemArray[5].ToString();
+                    CurrentClient = testClient;
+                }*/
+            }
+        }
+        private Client currentClient;
+        public Client CurrentClient 
+        {
+            get => currentClient;
+            set 
+            {
+                if (selectedClient != null)
+                {
+                    Client testClient = new Client();
+                    testClient.Id = Convert.ToInt32(selectedClient.Row.ItemArray[0].ToString());
+                    testClient.Surname = selectedClient.Row.ItemArray[1].ToString();
+                    testClient.FirstName = selectedClient.Row.ItemArray[2].ToString();
+                    testClient.Patronymic = selectedClient.Row.ItemArray[3].ToString();
+                    testClient.PhoneNumber = selectedClient.Row.ItemArray[4].ToString();
+                    testClient.Email = selectedClient.Row.ItemArray[5].ToString();
+                    CurrentClient = testClient;
+                }
+                OnPropertyChanged("SelectedClient");
+                OnPropertyChanged("CurrentClient");
+            }
+        }
+
+    private string msSqlConnectingString;
         public string MsSqlConnectingString
         {
             get => msSqlConnectingString;
@@ -48,6 +118,7 @@ namespace Shop
 
         public MainWindowVM()
         {
+            //клиенты
             SqlConnectionStringBuilder connectionStringMS = new SqlConnectionStringBuilder()
             {
                 DataSource = @"(localdb)\MSSQLLocalDB", //имя сервера источника данных, к которому будем подключаться
@@ -60,19 +131,45 @@ namespace Shop
             Task taskMS = new Task(ConnectToMSSqlDB, connectionStringMS);
             taskMS.Start();
 
-            Task taskAccess = new Task(ConnectToAccessDB);
-            taskAccess.Start();
-
             dataTableMS = new DataTable();
             dataAdapterMS = new SqlDataAdapter();
-
-            #region select
-            var sqlClientsMS = @"select * from client_info";
-            dataAdapterMS.SelectCommand = new SqlCommand(sqlClientsMS, sqlConnection);
-            #endregion
+            var selectClients = @"select * from client_info";
+            dataAdapterMS.SelectCommand = new SqlCommand(selectClients, sqlConnection);
 
             dataAdapterMS.Fill(dataTableMS);
             ClientsData = dataTableMS.DefaultView;
+
+            //продукты
+            OleDbConnectionStringBuilder accessConSring = new OleDbConnectionStringBuilder()
+            {
+                Provider = "Microsoft.ACE.OLEDB.12.0",
+                DataSource = "E:\\Сабина, курс\\Задание 17\\Shop\\AccessDB.accdb",
+                PersistSecurityInfo = true
+            };
+            OleDbConnection accessConnection = new OleDbConnection { ConnectionString = accessConSring.ConnectionString };
+
+            Task taskAccess = new Task(ConnectToAccessDB, accessConSring);
+            taskAccess.Start();
+            dataTableAccess = new DataTable();
+            dataAdapterAccess = new OleDbDataAdapter();
+            var selectProducts = @"select *from products order by id";
+            dataAdapterAccess.SelectCommand = new OleDbCommand(selectProducts, accessConnection);
+            dataAdapterAccess.Fill(dataTableAccess);
+            productsData = dataTableAccess.DefaultView;
+
+            var text = SelectedClient;
+
+            //FillClientsProducts(accessConnection);
+
+        }
+
+        private void FillClientsProducts(OleDbConnection accessConnection)
+        {
+            //продукты, выбранного клиента
+            string selectClientsProducts = (CurrentClient != null) ? $"select * from products where email={CurrentClient.Email}" : null;
+            dataAdapterAccess.SelectCommand = new OleDbCommand(selectClientsProducts, accessConnection);
+            dataAdapterAccess.Fill(dataTableAccess);
+            ClientsProductsData = dataTableAccess.DefaultView;
         }
 
         private void ConnectToMSSqlDB(object strCon)
@@ -94,25 +191,20 @@ namespace Shop
             }
         }
 
-        private void ConnectToAccessDB()
+        private void ConnectToAccessDB(object accessConSring)
         {
-            OleDbConnectionStringBuilder accessConSring = new OleDbConnectionStringBuilder()
-            {
-                Provider = "Microsoft.ACE.OLEDB.12.0",
-                DataSource = "E:\\Сабина, курс\\Задание 17\\Shop\\AccessDB.accdb",
-                PersistSecurityInfo = true
-            };
-            OleDbConnection accessConnection = new OleDbConnection { ConnectionString = accessConSring.ConnectionString };
-            using (accessConnection)
+            OleDbConnectionStringBuilder stringProductConnection = accessConSring as OleDbConnectionStringBuilder;
+            OleDbConnection oleDbConnection = new OleDbConnection {ConnectionString = stringProductConnection.ConnectionString };
+            using (oleDbConnection)
             {
                 try
                 {
-                    accessConnection.Open();
-                    AccessConnectingString = $"{accessConSring.ConnectionString} \nState = {accessConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
+                    oleDbConnection.Open();
+                    AccessConnectingString = $"{oleDbConnection.ConnectionString} \nState = {oleDbConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
                 }
                 catch (Exception e)
                 {
-                    AccessConnectingString = $"{accessConnection.State} \n State = {e.Message}";
+                    AccessConnectingString = $"{oleDbConnection.State} \n State = {e.Message}";
                 }
             }
         }

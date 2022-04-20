@@ -5,22 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Shop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="549" Width="926">
     <Grid>
-        <TextBox x:Name="MsSqlName" HorizontalAlignment="Left" Height="63" Margin="185,38,0,0" TextWrapping="Wrap" 
-                 Text="{Binding MsSqlConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="577"/>
-        <TextBox x:Name="AccessName" HorizontalAlignment="Left" Height="65" Margin="185,106,0,0" TextWrapping="Wrap" 
-                 Text="{Binding AccessConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="577"/>
-        <Label Content="Connectong string/State &#xD;&#xA;for MS SQL" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="170" Height="63"/>
-        <Label Content="Connectong string/State &#xD;&#xA;for Access" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Width="170" Height="63"/>
+        <TextBox x:Name="MsSqlName" HorizontalAlignment="Left" Height="41" Margin="185,38,0,0" TextWrapping="Wrap" 
+                 Text="{Binding MsSqlConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="723"/>
+        <TextBox x:Name="AccessName" HorizontalAlignment="Left" Height="41" Margin="185,84,0,0" TextWrapping="Wrap" 
+                 Text="{Binding AccessConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="723"/>
+        <Label Content="Connectong string/State &#xD;&#xA;for MS SQL" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
+        <Label Content="Connectong string/State &#xD;&#xA;for Access" HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
         <DataGrid x:Name="gridView"
-                  DataContext="{Binding ClientsData}"
                   IsSynchronizedWithCurrentItem="True"
                   SelectionMode="Single" 
                   AutoGenerateColumns="False" 
-                  ItemsSource="{Binding}"
+                  ItemsSource="{Binding ClientsData}"
+                  SelectedItem="{Binding SelectedClient}"
                   IsReadOnly="False" 
-                  Margin="0,189,101,21"
+                  Margin="10,189,471,200"
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="id" 
@@ -31,7 +31,7 @@
                 <DataGridTextColumn x:Name="surname" 
                                     Binding="{Binding surname}" 
                                     Header="Фамилия"/>
-                
+
                 <DataGridTextColumn x:Name="first_name" 
                                     Binding="{Binding first_name}" 
                                     Header="Имя"/>
@@ -47,7 +47,75 @@
                 <DataGridTextColumn x:Name="email" 
                                     Binding="{Binding email}" 
                                     Header="Почта"/>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
+                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
 
+        <DataGrid x:Name="gridProducts"
+                  DataContext="{Binding ProductsData}"
+                  IsSynchronizedWithCurrentItem="True"
+                  SelectionMode="Single" 
+                  AutoGenerateColumns="False" 
+                  ItemsSource="{Binding}"
+                  IsReadOnly="False" 
+                  Margin="10,347,91,42"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="product_id" 
+                                    Binding="{Binding id}" 
+                                    Header="Id" 
+                                    IsReadOnly="True"/>
+
+                <DataGridTextColumn x:Name="product_email" 
+                                    Binding="{Binding email}" 
+                                    Header="Почта"/>
+
+                <DataGridTextColumn x:Name="product_code" 
+                                    Binding="{Binding product_code}" 
+                                    Header="Код товара"/>
+
+                <DataGridTextColumn x:Name="product_name" 
+                                    Binding="{Binding product_name}" 
+                                    Header="Наименование"/>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
+                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        <DataGrid x:Name="selectedClientProduct"
+            DataContext="{Binding ClientsProductsData}"
+            IsSynchronizedWithCurrentItem="True"
+            SelectionMode="Single" 
+            AutoGenerateColumns="False" 
+            ItemsSource="{Binding}"
+            IsReadOnly="False" 
+            Margin="461,189,10,200"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="product_id1" 
+                    Binding="{Binding id}" 
+                    Header="Id" 
+                    IsReadOnly="True"/>
+
+                <DataGridTextColumn x:Name="product_email1" 
+                    Binding="{Binding email}" 
+                    Header="Почта"/>
+
+                <DataGridTextColumn x:Name="product_code1" 
+                    Binding="{Binding product_code}" 
+                    Header="Код товара"/>
+
+                <DataGridTextColumn x:Name="product_name1" 
+                    Binding="{Binding product_name}" 
+                    Header="Наименование"/>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>

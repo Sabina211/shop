@@ -13,6 +13,9 @@ values (N'Карлов', N'Карл', N'Карлович', '890900000001', 'Iamk
 insert into client_info (surname,first_name, patronymic, phone_number, email )
 values (N'Карлов', N'Марк', N'Карлович', '890900000001', 'Iammark@gmail.com');
 
+insert into client_info (surname,first_name, patronymic, phone_number, email )
+values (N'Марков2', N'Марк', N'Карлович', '890900000003', 'Iammark12@gmail.com');
+
 select * from client_info
 
 select * from products
