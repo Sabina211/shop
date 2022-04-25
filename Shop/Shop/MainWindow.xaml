@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Shop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="549" Width="926">
+        Title="MainWindow" Height="561" Width="926">
     <Grid>
-        <TextBox x:Name="MsSqlName" HorizontalAlignment="Left" Height="41" Margin="185,38,0,0" TextWrapping="Wrap" 
+        <TextBox x:Name="MsSqlName" HorizontalAlignment="Left" Height="41" Margin="185,17,0,0" TextWrapping="Wrap" 
                  Text="{Binding MsSqlConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="723"/>
-        <TextBox x:Name="AccessName" HorizontalAlignment="Left" Height="41" Margin="185,84,0,0" TextWrapping="Wrap" 
+        <TextBox x:Name="AccessName" HorizontalAlignment="Left" Height="41" Margin="185,63,0,0" TextWrapping="Wrap" 
                  Text="{Binding AccessConnectingString, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="723"/>
-        <Label Content="Connectong string/State &#xD;&#xA;for MS SQL" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
-        <Label Content="Connectong string/State &#xD;&#xA;for Access" HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
+        <Label Content="Connectong string/State &#xD;&#xA;for MS SQL" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
+        <Label Content="Connectong string/State &#xD;&#xA;for Access" HorizontalAlignment="Left" Margin="10,63,0,0" VerticalAlignment="Top" Width="170" Height="41"/>
         <DataGrid x:Name="gridView"
                   IsSynchronizedWithCurrentItem="True"
                   SelectionMode="Single" 
@@ -20,7 +20,7 @@
                   ItemsSource="{Binding ClientsData}"
                   SelectedItem="{Binding SelectedClient}"
                   IsReadOnly="False" 
-                  Margin="10,189,471,200"
+                  Margin="10,184,424,200" RenderTransformOrigin="0.499,0.688"
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="id" 
@@ -50,20 +50,20 @@
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
-                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
+                    <MenuItem Header="Добавить" Command="{Binding AddClientCommand}"/>
+                    <MenuItem Header="Удалить" Command="{Binding DeleteClientCommand}"/>
+                    <MenuItem Header="Изменить" Command="{Binding EditClientCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
 
         <DataGrid x:Name="gridProducts"
-                  DataContext="{Binding ProductsData}"
                   IsSynchronizedWithCurrentItem="True"
                   SelectionMode="Single" 
                   AutoGenerateColumns="False" 
-                  ItemsSource="{Binding}"
+                  ItemsSource="{Binding ProductsData}"
                   IsReadOnly="False" 
-                  Margin="10,347,91,42"
+                  Margin="10,364,10,25"
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="product_id" 
@@ -83,21 +83,15 @@
                                     Binding="{Binding product_name}" 
                                     Header="Наименование"/>
             </DataGrid.Columns>
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
-                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
         </DataGrid>
         <DataGrid x:Name="selectedClientProduct"
-            DataContext="{Binding ClientsProductsData}"
             IsSynchronizedWithCurrentItem="True"
             SelectionMode="Single" 
             AutoGenerateColumns="False" 
-            ItemsSource="{Binding}"
+            ItemsSource="{Binding ClientsProductsData}"
+            SelectedItem="{Binding SelectedProduct}"
             IsReadOnly="False" 
-            Margin="461,189,10,200"
+            Margin="508,184,10,200"
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="product_id1" 
@@ -119,10 +113,15 @@
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить" Click="MenuItemAddClick"/>
-                    <MenuItem Header="Удалить" Click="MenuItemDeleteClick"/>
+                    <MenuItem Header="Добавить" Command ="{Binding AddProductCommand}"/>
+                    <MenuItem Header="Удалить"  Command ="{Binding DeleteProductCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
+        <Label Content="Список клиентов" HorizontalAlignment="Left" Margin="10,121,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.053,0.192" Width="170" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Товары выбранного клиента" HorizontalAlignment="Left" Margin="508,121,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.053,0.192" Width="268" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Все товары в БД" HorizontalAlignment="Left" Margin="10,335,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.053,0.192" Width="170" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Для добавления, удаления и редактирования клиентов используйте &#xD;&#xA;контекстное меню" HorizontalAlignment="Left" Margin="10,143,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.105,0"/>
+        <Label Content="Для добавления и удаления товаров клентов используйте &#xA;контекстное меню" HorizontalAlignment="Left" Margin="508,143,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.105,0"/>
     </Grid>
 </Window>

@@ -7,16 +7,25 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Shop
 {
     internal class MainWindowVM : Bindable
     {
+        private object objectForLock = "wer";
+        AccessDbConnection productsDBConnection = new AccessDbConnection();
+        //DBConnection productsDBConnection;
         SqlDataAdapter dataAdapterMS;
         DataTable dataTableMS;
 
-        OleDbDataAdapter dataAdapterAccess;
-        DataTable dataTableAccess;
+        //OleDbDataAdapter dataAdapterAccess;
+        //DataTable dataTableAccess;
+
+        //OleDbDataAdapter dataAdapterClientsProducts;
+        //DataTable dataTableClientsProducts;
 
         private object clientsData;
         public object ClientsData 
@@ -60,25 +69,6 @@ namespace Shop
                 selectedClient = value;
                 OnPropertyChanged("SelectedClient");
                 OnPropertyChanged("CurrentClient");
-                /*if (selectedClient != null)
-                {
-                    Client testClient = new Client();
-                    testClient.Id = Convert.ToInt32(selectedClient.Row.ItemArray[0].ToString());
-                    testClient.Surname = selectedClient.Row.ItemArray[1].ToString();
-                    testClient.FirstName = selectedClient.Row.ItemArray[2].ToString();
-                    testClient.Patronymic = selectedClient.Row.ItemArray[3].ToString();
-                    testClient.PhoneNumber = selectedClient.Row.ItemArray[4].ToString();
-                    testClient.Email = selectedClient.Row.ItemArray[5].ToString();
-                    CurrentClient = testClient;
-                }*/
-            }
-        }
-        private Client currentClient;
-        public Client CurrentClient 
-        {
-            get => currentClient;
-            set 
-            {
                 if (selectedClient != null)
                 {
                     Client testClient = new Client();
@@ -89,13 +79,54 @@ namespace Shop
                     testClient.PhoneNumber = selectedClient.Row.ItemArray[4].ToString();
                     testClient.Email = selectedClient.Row.ItemArray[5].ToString();
                     CurrentClient = testClient;
+                    FillClientsProducts();
                 }
-                OnPropertyChanged("SelectedClient");
+            }
+        }
+        private Client currentClient;
+        public Client CurrentClient 
+        {
+            get => currentClient;
+            set 
+            {
+                currentClient = value;
                 OnPropertyChanged("CurrentClient");
             }
         }
 
-    private string msSqlConnectingString;
+        private DataRowView selectedProduct;
+        public DataRowView SelectedProduct
+        {
+            get { return selectedClient; }
+            set
+            {
+                selectedProduct = value;
+                OnPropertyChanged("SelectedProduct");
+                if (selectedProduct != null)
+                {
+                    Product newProduct = new Product(
+                        Convert.ToInt32(selectedProduct.Row.ItemArray[0].ToString()),
+                        selectedProduct.Row.ItemArray[2].ToString(),
+                        selectedProduct.Row.ItemArray[3].ToString(),
+                        selectedProduct.Row.ItemArray[1].ToString()
+                        );
+                    CurrentProduct = newProduct;
+                }
+            }
+        }
+
+        private Product currentProduct;
+        public Product CurrentProduct
+        {
+            get => currentProduct;
+            set
+            {
+                currentProduct = value;
+                OnPropertyChanged("CurrentProduct");
+            }
+        }
+
+        private string msSqlConnectingString;
         public string MsSqlConnectingString
         {
             get => msSqlConnectingString;
@@ -115,61 +146,111 @@ namespace Shop
                 OnPropertyChanged("AccessConnectingString");
             }
         }
+        public ICommand AddClientCommand { get; }
+        public ICommand EditClientCommand { get; }
+        public ICommand DeleteClientCommand { get; }
+        public ICommand AddProductCommand { get; }
+        public ICommand DeleteProductCommand { get; }
 
         public MainWindowVM()
         {
-            //клиенты
-            SqlConnectionStringBuilder connectionStringMS = new SqlConnectionStringBuilder()
+
+            AddClientCommand = new RelayCommand( obj =>
             {
-                DataSource = @"(localdb)\MSSQLLocalDB", //имя сервера источника данных, к которому будем подключаться
-                InitialCatalog = "MSSQLLocalDB", //файл, к которому планируем подключаться
-                IntegratedSecurity = true, //способ авторизации
-                Pooling = false
-            };
-            SqlConnection sqlConnection = new SqlConnection { ConnectionString = connectionStringMS.ConnectionString };
+                AddClientWindow addClientWindow = new AddClientWindow(this);
+                addClientWindow.Show();
+            });
 
-            Task taskMS = new Task(ConnectToMSSqlDB, connectionStringMS);
+            EditClientCommand = new RelayCommand(obj =>
+            {
+                EditClientwindow editClientWindow = new EditClientwindow(this, CurrentClient);
+                editClientWindow.Show();
+            });
+
+            DeleteClientCommand = new RelayCommand( obj => 
+            {
+                MessageBoxResult messagebox =  MessageBox.Show($"Вы уверены, что хотите удалить пользователя с именем " +
+                    $"{CurrentClient.Surname} {CurrentClient.FirstName} {CurrentClient.Patronymic}?", "Подтверждение операции", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (messagebox == MessageBoxResult.Yes)
+                {
+                    MSDbConnection clientsConnectionDelete = new MSDbConnection();
+                    using (clientsConnectionDelete.Connection)
+                    {
+                        try
+                        {
+                            clientsConnectionDelete.Connection.Open();
+                            dataAdapterMS = new SqlDataAdapter();
+                            var deleteClient = $"delete from client_info where id={CurrentClient.Id}";
+                            dataAdapterMS.DeleteCommand = new SqlCommand(deleteClient, clientsConnectionDelete.Connection);
+                            dataAdapterMS.DeleteCommand.ExecuteNonQuery();
+                            UpdateClients();
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.ToString());
+                        }
+                    }                    
+                }
+            });
+
+            AddProductCommand = new RelayCommand(obj =>
+            {
+                AddProductWindow addProductWindow = new AddProductWindow(this);
+                addProductWindow.Show();
+            });
+
+            DeleteProductCommand = new RelayCommand(obj =>
+            {
+                MessageBoxResult messagebox = MessageBox.Show($"Вы уверены, что хотите удалить покупку " +
+                    $"\"{CurrentProduct.ProductName}\" с кодом {CurrentProduct.ProductCode} ?", "Подтверждение операции", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (messagebox == MessageBoxResult.Yes)
+                {
+                   
+                    AccessDbConnection productsConnectionDelete = new AccessDbConnection();
+
+                    using (productsConnectionDelete.Connection)
+                    {
+                        try
+                        {
+                            productsConnectionDelete.Connection.Open();
+                            OleDbDataAdapter dataAdapterAccessDelete = new OleDbDataAdapter();
+                            var deleteClient = $"delete from products where id={CurrentProduct.Id}";
+                            dataAdapterAccessDelete.DeleteCommand = new OleDbCommand(deleteClient, productsConnectionDelete.Connection);
+                            dataAdapterAccessDelete.DeleteCommand.ExecuteNonQuery();
+                            UpdateProducts();
+                            FillClientsProducts();
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.ToString());
+                        }
+                    }
+                }
+            });
+
+            //клиенты
+            MSDbConnection clientsConnection = new MSDbConnection();
+
+            Task taskMS = new Task(ConnectToMSSqlDB, clientsConnection.StringBuilder);
             taskMS.Start();
-
-            dataTableMS = new DataTable();
-            dataAdapterMS = new SqlDataAdapter();
-            var selectClients = @"select * from client_info";
-            dataAdapterMS.SelectCommand = new SqlCommand(selectClients, sqlConnection);
-
-            dataAdapterMS.Fill(dataTableMS);
-            ClientsData = dataTableMS.DefaultView;
+            UpdateClients();
 
             //продукты
-            OleDbConnectionStringBuilder accessConSring = new OleDbConnectionStringBuilder()
-            {
-                Provider = "Microsoft.ACE.OLEDB.12.0",
-                DataSource = "E:\\Сабина, курс\\Задание 17\\Shop\\AccessDB.accdb",
-                PersistSecurityInfo = true
-            };
-            OleDbConnection accessConnection = new OleDbConnection { ConnectionString = accessConSring.ConnectionString };
-
-            Task taskAccess = new Task(ConnectToAccessDB, accessConSring);
+            Task taskAccess = new Task(ConnectToAccessDB);
             taskAccess.Start();
-            dataTableAccess = new DataTable();
-            dataAdapterAccess = new OleDbDataAdapter();
-            var selectProducts = @"select *from products order by id";
-            dataAdapterAccess.SelectCommand = new OleDbCommand(selectProducts, accessConnection);
-            dataAdapterAccess.Fill(dataTableAccess);
-            productsData = dataTableAccess.DefaultView;
-
-            var text = SelectedClient;
-
-            //FillClientsProducts(accessConnection);
-
+            UpdateProducts();
         }
 
-        private void FillClientsProducts(OleDbConnection accessConnection)
+        public void FillClientsProducts()
         {
             //продукты, выбранного клиента
-            string selectClientsProducts = (CurrentClient != null) ? $"select * from products where email={CurrentClient.Email}" : null;
-            dataAdapterAccess.SelectCommand = new OleDbCommand(selectClientsProducts, accessConnection);
-            dataAdapterAccess.Fill(dataTableAccess);
-            ClientsProductsData = dataTableAccess.DefaultView;
+            AccessDbConnection accessDbConnection = new AccessDbConnection();
+            DataTable dataTableClientsProducts = new DataTable();
+            OleDbDataAdapter dataAdapterClientsProducts = new OleDbDataAdapter();
+            string selectClientsProducts = (CurrentClient != null) ? $"select * from products where email='{CurrentClient.Email}'" : null;
+            dataAdapterClientsProducts.SelectCommand = new OleDbCommand(selectClientsProducts, accessDbConnection.Connection);
+            dataAdapterClientsProducts.Fill(dataTableClientsProducts);
+            ClientsProductsData = dataTableClientsProducts.DefaultView;
         }
 
         private void ConnectToMSSqlDB(object strCon)
@@ -182,7 +263,7 @@ namespace Shop
                 try
                 {
                     sqlConnection.Open();
-                    MsSqlConnectingString = $"{stringConnection.ConnectionString} \nState = {sqlConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
+                    MsSqlConnectingString = $"{stringConnection.ConnectionString} \nState = {sqlConnection.State}";
                 }
                 catch (Exception e)
                 {
@@ -191,20 +272,64 @@ namespace Shop
             }
         }
 
-        private void ConnectToAccessDB(object accessConSring)
+        private void ConnectToAccessDB()
         {
-            OleDbConnectionStringBuilder stringProductConnection = accessConSring as OleDbConnectionStringBuilder;
-            OleDbConnection oleDbConnection = new OleDbConnection {ConnectionString = stringProductConnection.ConnectionString };
+            OleDbConnection oleDbConnection = new OleDbConnection {ConnectionString = productsDBConnection.StringBuilder.ConnectionString };
             using (oleDbConnection)
             {
                 try
                 {
                     oleDbConnection.Open();
-                    AccessConnectingString = $"{oleDbConnection.ConnectionString} \nState = {oleDbConnection.State} \nThread Id = {Thread.CurrentThread.ManagedThreadId}";
+                    AccessConnectingString = $"{oleDbConnection.ConnectionString} \nState = {oleDbConnection.State}";
                 }
                 catch (Exception e)
                 {
                     AccessConnectingString = $"{oleDbConnection.State} \n State = {e.Message}";
+                }
+            }
+        }
+
+        public void UpdateClients()
+        {
+            MSDbConnection clientsConnection = new MSDbConnection();
+            using (clientsConnection.Connection)
+            {
+                try
+                {
+                    dataTableMS = new DataTable();
+                    dataAdapterMS = new SqlDataAdapter();
+                    var selectClients = @"select * from client_info";
+                    dataAdapterMS.SelectCommand = new SqlCommand(selectClients, clientsConnection.Connection);
+
+                    dataAdapterMS.Fill(dataTableMS);
+                    ClientsData = dataTableMS.DefaultView;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+            }
+        }
+
+        public void UpdateProducts()
+        {
+            AccessDbConnection productsConnection = new AccessDbConnection();
+            using (productsConnection.Connection)
+            {
+                try
+                {
+                    Thread.Sleep(1000);
+                    DataTable dataTableAccess = new DataTable();
+                    OleDbDataAdapter dataAdapterAccess = new OleDbDataAdapter();
+                    var selectProducts = @"select *from products order by id";
+                    dataAdapterAccess.SelectCommand = new OleDbCommand(selectProducts, productsConnection.Connection);
+
+                    dataAdapterAccess.Fill(dataTableAccess);
+                    ProductsData = dataTableAccess.DefaultView;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
                 }
             }
         }

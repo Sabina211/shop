@@ -28,12 +28,14 @@ namespace Shop
             DataContext = new MainWindowVM();
         }
 
-        private void MenuItemDeleteClick(object sender, RoutedEventArgs e)
+        /*private void CurrentCellChanged(object sender, EventArgs e)
         {
-        }
-        private void MenuItemAddClick(object sender, RoutedEventArgs e)
-        {
+            MessageBox.Show("CurrentCellChanged");
+        }*/
 
-        }
+        /*private void CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            MessageBox.Show("CellEditEnding");
+        }*/
     }
 }
