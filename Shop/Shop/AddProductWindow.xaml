@@ -1,0 +1,37 @@
+﻿<Window x:Class="Shop.AddProductWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shop"
+        mc:Ignorable="d"
+        Title="Добавить покупку" Height="273.17" Width="407.317">
+    <Grid HorizontalAlignment="Left" Height="422" VerticalAlignment="Bottom" Width="451" Margin="0,0,-75,-3">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="32*"/>
+            <ColumnDefinition Width="57*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Content="Код товара" HorizontalAlignment="Left" Margin="16,191,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.759,-0.815" Height="26" Width="82" FontSize="14"/>
+        <Label Content="Наименование товара" HorizontalAlignment="Left" Margin="16,221,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.129,-2.676" Height="26" Width="157" FontSize="14" Grid.ColumnSpan="2"/>
+        <Label Content="Почта клиента" HorizontalAlignment="Left" Margin="15,250,0,0" VerticalAlignment="Top" Height="27" Width="137" FontSize="14"/>
+        <StackPanel Grid.Column="1" Margin="11,186,71,84">
+            <TextBox x:Name="ProductCode"
+                      Text="{Binding AddedProduct.ProductCode, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
+            <TextBox x:Name="ProductName"
+                      Text="{Binding AddedProduct.ProductName, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
+            <TextBox x:Name="Email"
+                      Text="{Binding AddedProduct.Email, UpdateSourceTrigger=PropertyChanged}"
+                     Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
+        </StackPanel>
+        <Button Content="Сохранить" 
+                    Command="{Binding SaveCommand}"
+                    Grid.Column="1" HorizontalAlignment="Left" Margin="116,359,0,0" VerticalAlignment="Top" Width="102" Height="30" FontSize="14"/>
+        <Label Visibility="{Binding ErrorEnable, UpdateSourceTrigger=PropertyChanged}"
+            Content="Заполните обязательные поля" Grid.Column="1" HorizontalAlignment="Left" Margin="21,311,0,0" VerticalAlignment="Top" Background="{x:Null}" FontSize="13" Foreground="#FFB90606"/>
+    </Grid>
+</Window>

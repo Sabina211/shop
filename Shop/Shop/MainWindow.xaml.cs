@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,5 +27,15 @@ namespace Shop
             InitializeComponent();
             DataContext = new MainWindowVM();
         }
+
+        /*private void CurrentCellChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show("CurrentCellChanged");
+        }*/
+
+        /*private void CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            MessageBox.Show("CellEditEnding");
+        }*/
     }
 }
