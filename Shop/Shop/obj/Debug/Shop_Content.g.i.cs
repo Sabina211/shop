@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("clientsdb.context.tt")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("clientsdb.tt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("sqlquery1.sql")]
 
 

@@ -61,3 +61,8 @@ E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\AddProductWindow
 E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\AddProductWindow.baml
 E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\EditClientwindow.g.cs
 E:\Сабина, курс\Задание 17\Shop\Shop\obj\Debug\EditClientwindow.baml
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\EntityFramework.dll
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\EntityFramework.SqlServer.dll
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\EntityFramework.xml
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\EntityFramework.SqlServer.xml
+E:\Сабина, курс\Задание 17\Shop\Shop\bin\Debug\ru\EntityFramework.resources.dll

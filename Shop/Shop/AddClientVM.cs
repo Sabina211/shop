@@ -12,10 +12,8 @@ namespace Shop
 {
     class AddClientVM : Bindable
     {
-        SqlDataAdapter dataAdapterMS;
-        //DataTable dataTableMS;
-        private Client addedClient;
-        public Client AddedClient
+        private client_info addedClient;
+        public client_info AddedClient
         {
             get => addedClient;
             set
@@ -40,15 +38,15 @@ namespace Shop
         public ICommand SaveCommand { get; }
         public AddClientVM(MainWindowVM mainWindowVM)
         {
-            AddedClient = new Client();
+            AddedClient = new client_info();
             SaveCommand = new RelayCommand(obj =>
             {
                 if (AddedClient == null || 
-                AddedClient.Surname == "" || 
-                AddedClient.Surname == null || 
-                AddedClient.FirstName == "" ||
-                AddedClient.FirstName == null ||
-                AddedClient.Email == "")
+                AddedClient.surname == "" || 
+                AddedClient.surname == null || 
+                AddedClient.first_name == "" ||
+                AddedClient.first_name == null ||
+                AddedClient.email == "")
                 { 
                     ErrorEnable = "Visible"; 
                     return; 
@@ -56,25 +54,16 @@ namespace Shop
                 else
                 {
                     ErrorEnable = "Hidden";
-                  
-                    var insertNewClient = $"insert into client_info " +
-                    $"(surname, first_name, patronymic, phone_number, email) " +
-                    $"values (N'{AddedClient.Surname}', " +
-                    $"N'{AddedClient.FirstName}', " +
-                    $"N'{AddedClient.Patronymic}'," +
-                    $" N'{AddedClient.PhoneNumber}', " +
-                    $"N'{AddedClient.Email}');";
-
                     MSDbConnection clientDBConnection = new MSDbConnection();
                     using (clientDBConnection.Connection)
                      {
                         try
                         {
                             clientDBConnection.Connection.Open();
-                            //dataTableMS = new DataTable();
-                            dataAdapterMS = new SqlDataAdapter();
-                            dataAdapterMS.InsertCommand = new SqlCommand(insertNewClient, clientDBConnection.Connection);
-                            dataAdapterMS.InsertCommand.ExecuteNonQuery();
+                            MSSQLLocalDBEntities clientsDB = new MSSQLLocalDBEntities();
+                            clientsDB.client_info.Add(AddedClient);
+                            clientsDB.SaveChanges();
+
                         }
                         catch (Exception e)
                         {

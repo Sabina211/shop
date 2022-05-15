@@ -19,7 +19,7 @@ namespace Shop
     /// </summary>
     public partial class EditClientwindow : Window
     {
-        internal EditClientwindow(MainWindowVM mainWindowVM, Client CurrentClient)
+        internal EditClientwindow(MainWindowVM mainWindowVM, client_info CurrentClient)
         {
             InitializeComponent();
             DataContext = new EditClientVM(mainWindowVM, CurrentClient);

@@ -44,8 +44,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -68,6 +77,24 @@
     <Compile Include="AddProductWindow.xaml.cs">
       <DependentUpon>AddProductWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientsDB.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClientsDB.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ClientsDB.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClientsDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ClientsDB.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClientsDB.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Client_info.cs">
+      <DependentUpon>ClientsDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="EditClientVM.cs" />
     <Compile Include="EditClientwindow.xaml.cs">
       <DependentUpon>EditClientwindow.xaml</DependentUpon>
@@ -78,6 +105,7 @@
       <DependentUpon>AddClientWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Product.cs" />
+    <Compile Include="ProductsDB.cs" />
     <Compile Include="RelayCommand.cs" />
     <Page Include="AddClientWindow.xaml">
       <SubType>Designer</SubType>
@@ -100,7 +128,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bindable.cs" />
-    <Compile Include="Client.cs" />
     <Compile Include="AccessDbConnection.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -126,6 +153,14 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EntityDeploy Include="ClientsDB.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ClientsDB.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ClientsDB.edmx.diagram">
+      <DependentUpon>ClientsDB.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -135,9 +170,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ClientsDB.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ClientsDB.Context.cs</LastGenOutput>
+      <DependentUpon>ClientsDB.edmx</DependentUpon>
+    </Content>
+    <Content Include="ClientsDB.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ClientsDB.edmx</DependentUpon>
+      <LastGenOutput>ClientsDB.cs</LastGenOutput>
+    </Content>
     <Content Include="SQLQuery1.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup Condition="$(VisualStudioVersion) == '16.0'">
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>$(SSDTPath)\Microsoft.Data.Tools.Schema.Sql.dll</HintPath>

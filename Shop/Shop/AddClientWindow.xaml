@@ -21,19 +21,19 @@
         <Label Content="Почта" HorizontalAlignment="Left" Margin="10,258,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.195,0.272" Height="26" Width="60" FontSize="14"/>
         <StackPanel Grid.Column="1" Margin="0,132,82,138">
             <TextBox x:Name="Surname"
-                      Text="{Binding AddedClient.Surname, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding AddedClient.surname, UpdateSourceTrigger=PropertyChanged}"
                      HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
             <TextBox x:Name="FirstName"
-                      Text="{Binding AddedClient.FirstName, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding AddedClient.first_name, UpdateSourceTrigger=PropertyChanged}"
                      Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
             <TextBox x:Name="Patronymic"
-                      Text="{Binding AddedClient.Patronymic, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding AddedClient.patronymic, UpdateSourceTrigger=PropertyChanged}"
                      Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
             <TextBox x:Name="Phone"
-                      Text="{Binding AddedClient.PhoneNumber, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding AddedClient.phone_number, UpdateSourceTrigger=PropertyChanged}"
                 Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="193"/>
             <TextBox x:Name="Email"
-                      Text="{Binding AddedClient.Email, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding AddedClient.email, UpdateSourceTrigger=PropertyChanged}"
                      Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,5,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="193"/>
         </StackPanel>
         <Button Content="Сохранить" 

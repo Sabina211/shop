@@ -52,22 +52,16 @@ namespace Shop
                 else
                 {
                     ErrorEnable = "Hidden";
-
-                    var insertNewProduct = $"insert into products " +
-                    $"(email, product_code, product_name) " +
-                    $"values ('{AddedProduct.Email}', " +
-                    $"'{AddedProduct.ProductCode}', " +
-                    $"'{AddedProduct.ProductName}');";
-
-                    AccessDbConnection productDBConnection = new AccessDbConnection();
+                    MSDbConnection productDBConnection = new MSDbConnection();
                     using (productDBConnection.Connection)
                     {
                         try
                         {
                             productDBConnection.Connection.Open();
-                            OleDbDataAdapter  productAdapter = new OleDbDataAdapter();
-                            productAdapter.InsertCommand = new OleDbCommand(insertNewProduct, productDBConnection.Connection);
-                            productAdapter.InsertCommand.ExecuteNonQuery();
+                            ProductsDB productsDB = new ProductsDB();
+                            productsDB.Products.Add(AddedProduct);
+                            productsDB.SaveChanges();
+
                         }
                         catch (Exception e)
                         {

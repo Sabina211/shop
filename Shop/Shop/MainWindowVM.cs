@@ -10,22 +10,14 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Diagnostics;
+using System.Data.Entity;
 
 namespace Shop
 {
     internal class MainWindowVM : Bindable
     {
-        private object objectForLock = "wer";
         AccessDbConnection productsDBConnection = new AccessDbConnection();
-        //DBConnection productsDBConnection;
-        SqlDataAdapter dataAdapterMS;
-        DataTable dataTableMS;
-
-        //OleDbDataAdapter dataAdapterAccess;
-        //DataTable dataTableAccess;
-
-        //OleDbDataAdapter dataAdapterClientsProducts;
-        //DataTable dataTableClientsProducts;
 
         private object clientsData;
         public object ClientsData 
@@ -60,8 +52,8 @@ namespace Shop
             }
         }
 
-        private DataRowView selectedClient;
-        public DataRowView SelectedClient
+        private client_info selectedClient;
+        public client_info SelectedClient
         {
             get { return selectedClient; }
             set
@@ -71,20 +63,20 @@ namespace Shop
                 OnPropertyChanged("CurrentClient");
                 if (selectedClient != null)
                 {
-                    Client testClient = new Client();
-                    testClient.Id = Convert.ToInt32(selectedClient.Row.ItemArray[0].ToString());
-                    testClient.Surname = selectedClient.Row.ItemArray[1].ToString();
-                    testClient.FirstName = selectedClient.Row.ItemArray[2].ToString();
-                    testClient.Patronymic = selectedClient.Row.ItemArray[3].ToString();
-                    testClient.PhoneNumber = selectedClient.Row.ItemArray[4].ToString();
-                    testClient.Email = selectedClient.Row.ItemArray[5].ToString();
+                    client_info testClient = new client_info();
+                    testClient.id = Convert.ToInt32(selectedClient.id);
+                    testClient.surname = selectedClient.surname;
+                    testClient.first_name = selectedClient.first_name;
+                    testClient.patronymic = selectedClient.patronymic;
+                    testClient.phone_number = selectedClient.phone_number;
+                    testClient.email = selectedClient.email;
                     CurrentClient = testClient;
                     FillClientsProducts();
                 }
             }
         }
-        private Client currentClient;
-        public Client CurrentClient 
+        private client_info currentClient;
+        public client_info CurrentClient 
         {
             get => currentClient;
             set 
@@ -94,21 +86,21 @@ namespace Shop
             }
         }
 
-        private DataRowView selectedProduct;
-        public DataRowView SelectedProduct
+        private Product selectedProduct;
+        public Product SelectedProduct
         {
-            get { return selectedClient; }
+            get { return selectedProduct; }
             set
             {
                 selectedProduct = value;
                 OnPropertyChanged("SelectedProduct");
-                if (selectedProduct != null)
+                if (selectedProduct != null )
                 {
                     Product newProduct = new Product(
-                        Convert.ToInt32(selectedProduct.Row.ItemArray[0].ToString()),
-                        selectedProduct.Row.ItemArray[2].ToString(),
-                        selectedProduct.Row.ItemArray[3].ToString(),
-                        selectedProduct.Row.ItemArray[1].ToString()
+                        Convert.ToInt32(selectedProduct.Id),
+                        selectedProduct.ProductCode,
+                        selectedProduct.ProductName,
+                        selectedProduct.Email
                         );
                     CurrentProduct = newProduct;
                 }
@@ -170,7 +162,7 @@ namespace Shop
             DeleteClientCommand = new RelayCommand( obj => 
             {
                 MessageBoxResult messagebox =  MessageBox.Show($"Вы уверены, что хотите удалить пользователя с именем " +
-                    $"{CurrentClient.Surname} {CurrentClient.FirstName} {CurrentClient.Patronymic}?", "Подтверждение операции", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                    $"{CurrentClient.surname} {CurrentClient.first_name} {CurrentClient.patronymic}?", "Подтверждение операции", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (messagebox == MessageBoxResult.Yes)
                 {
                     MSDbConnection clientsConnectionDelete = new MSDbConnection();
@@ -179,10 +171,10 @@ namespace Shop
                         try
                         {
                             clientsConnectionDelete.Connection.Open();
-                            dataAdapterMS = new SqlDataAdapter();
-                            var deleteClient = $"delete from client_info where id={CurrentClient.Id}";
-                            dataAdapterMS.DeleteCommand = new SqlCommand(deleteClient, clientsConnectionDelete.Connection);
-                            dataAdapterMS.DeleteCommand.ExecuteNonQuery();
+                            MSSQLLocalDBEntities clientsInfoDB = new MSSQLLocalDBEntities();
+                            var clientsForDelete = clientsInfoDB.client_info.Where(e=>e.id==CurrentClient.id);
+                            clientsInfoDB.client_info.Remove(clientsForDelete.First());
+                            clientsInfoDB.SaveChanges();
                             UpdateClients();
                         }
                         catch (Exception e)
@@ -205,18 +197,18 @@ namespace Shop
                     $"\"{CurrentProduct.ProductName}\" с кодом {CurrentProduct.ProductCode} ?", "Подтверждение операции", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (messagebox == MessageBoxResult.Yes)
                 {
-                   
-                    AccessDbConnection productsConnectionDelete = new AccessDbConnection();
 
+                    MSDbConnection productsConnectionDelete = new MSDbConnection();
                     using (productsConnectionDelete.Connection)
                     {
                         try
                         {
                             productsConnectionDelete.Connection.Open();
-                            OleDbDataAdapter dataAdapterAccessDelete = new OleDbDataAdapter();
-                            var deleteClient = $"delete from products where id={CurrentProduct.Id}";
-                            dataAdapterAccessDelete.DeleteCommand = new OleDbCommand(deleteClient, productsConnectionDelete.Connection);
-                            dataAdapterAccessDelete.DeleteCommand.ExecuteNonQuery();
+                            ProductsDB products = new ProductsDB();
+                            var productsForDelete = products.Products.Where(e=> e.Id== CurrentProduct.Id);
+                            products.Products.Remove(productsForDelete.First());
+                            products.SaveChanges();
+
                             UpdateProducts();
                             FillClientsProducts();
                         }
@@ -245,12 +237,10 @@ namespace Shop
         {
             //продукты, выбранного клиента
             AccessDbConnection accessDbConnection = new AccessDbConnection();
-            DataTable dataTableClientsProducts = new DataTable();
-            OleDbDataAdapter dataAdapterClientsProducts = new OleDbDataAdapter();
-            string selectClientsProducts = (CurrentClient != null) ? $"select * from products where email='{CurrentClient.Email}'" : null;
-            dataAdapterClientsProducts.SelectCommand = new OleDbCommand(selectClientsProducts, accessDbConnection.Connection);
-            dataAdapterClientsProducts.Fill(dataTableClientsProducts);
-            ClientsProductsData = dataTableClientsProducts.DefaultView;
+            ProductsDB productsDB = new ProductsDB();
+            productsDB.Products.Load();
+            var selectedProducts = (CurrentClient != null) ? productsDB.Products.Where(e=>e.Email==CurrentClient.email) : null;
+            ClientsProductsData = selectedProducts.ToList<Product>();
         }
 
         private void ConnectToMSSqlDB(object strCon)
@@ -296,13 +286,10 @@ namespace Shop
             {
                 try
                 {
-                    dataTableMS = new DataTable();
-                    dataAdapterMS = new SqlDataAdapter();
-                    var selectClients = @"select * from client_info";
-                    dataAdapterMS.SelectCommand = new SqlCommand(selectClients, clientsConnection.Connection);
-
-                    dataAdapterMS.Fill(dataTableMS);
-                    ClientsData = dataTableMS.DefaultView;
+                    MSSQLLocalDBEntities client_Info = new MSSQLLocalDBEntities();
+                    client_Info.client_info.Load();
+                    var selectClients = client_Info.client_info;
+                    ClientsData = selectClients.Local.ToList<client_info>();
                 }
                 catch (Exception e)
                 {
@@ -313,19 +300,16 @@ namespace Shop
 
         public void UpdateProducts()
         {
-            AccessDbConnection productsConnection = new AccessDbConnection();
-            using (productsConnection.Connection)
+            MSDbConnection clientsConnection = new MSDbConnection();
+            using (clientsConnection.Connection)
             {
                 try
                 {
                     Thread.Sleep(1000);
-                    DataTable dataTableAccess = new DataTable();
-                    OleDbDataAdapter dataAdapterAccess = new OleDbDataAdapter();
-                    var selectProducts = @"select *from products order by id";
-                    dataAdapterAccess.SelectCommand = new OleDbCommand(selectProducts, productsConnection.Connection);
-
-                    dataAdapterAccess.Fill(dataTableAccess);
-                    ProductsData = dataTableAccess.DefaultView;
+                    ProductsDB productsDB = new ProductsDB();
+                    productsDB.Products.Load();
+                    var selectedProducts = productsDB.Products.OrderBy(e=>e.Id);
+                    ProductsData = selectedProducts.ToList<Product>();
                 }
                 catch (Exception e)
                 {

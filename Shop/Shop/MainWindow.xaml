@@ -67,20 +67,20 @@
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="product_id" 
-                                    Binding="{Binding id}" 
+                                    Binding="{Binding Id}" 
                                     Header="Id" 
                                     IsReadOnly="True"/>
 
                 <DataGridTextColumn x:Name="product_email" 
-                                    Binding="{Binding email}" 
+                                    Binding="{Binding Email}" 
                                     Header="Почта"/>
 
                 <DataGridTextColumn x:Name="product_code" 
-                                    Binding="{Binding product_code}" 
+                                    Binding="{Binding ProductCode}" 
                                     Header="Код товара"/>
 
                 <DataGridTextColumn x:Name="product_name" 
-                                    Binding="{Binding product_name}" 
+                                    Binding="{Binding ProductName}" 
                                     Header="Наименование"/>
             </DataGrid.Columns>
         </DataGrid>
@@ -95,20 +95,20 @@
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="product_id1" 
-                    Binding="{Binding id}" 
+                    Binding="{Binding Id}" 
                     Header="Id" 
                     IsReadOnly="True"/>
 
                 <DataGridTextColumn x:Name="product_email1" 
-                    Binding="{Binding email}" 
+                    Binding="{Binding Email}" 
                     Header="Почта"/>
 
                 <DataGridTextColumn x:Name="product_code1" 
-                    Binding="{Binding product_code}" 
+                    Binding="{Binding ProductCode}" 
                     Header="Код товара"/>
 
                 <DataGridTextColumn x:Name="product_name1" 
-                    Binding="{Binding product_name}" 
+                    Binding="{Binding ProductName}" 
                     Header="Наименование"/>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>

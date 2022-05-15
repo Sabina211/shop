@@ -12,8 +12,8 @@ namespace Shop
 {
     class EditClientVM : Bindable
     {
-        private Client editClient;
-        public Client EditClient
+        private client_info editClient;
+        public client_info EditClient
         {
             get => editClient;
             set
@@ -36,18 +36,18 @@ namespace Shop
             }
         }
         public ICommand SaveCommand { get; }
-        public EditClientVM(MainWindowVM mainWindowVM, Client CurrentClient)
+        public EditClientVM(MainWindowVM mainWindowVM, client_info CurrentClient)
         {
-            EditClient = new Client(CurrentClient.Id, CurrentClient.FirstName, CurrentClient.Surname, CurrentClient.Patronymic, CurrentClient.PhoneNumber, CurrentClient.Email);
+            EditClient = new client_info(CurrentClient.id, CurrentClient.first_name, CurrentClient.surname, CurrentClient.patronymic, CurrentClient.phone_number, CurrentClient.email);
             //EditClient.Id = CurrentClient.Id;
             SaveCommand = new RelayCommand(obj =>
             {
                 if (EditClient == null ||
-                EditClient.Surname == "" ||
-                EditClient.Surname == null ||
-                EditClient.FirstName == "" ||
-                EditClient.FirstName == null ||
-                EditClient.Email == "")
+                EditClient.surname == "" ||
+                EditClient.surname == null ||
+                EditClient.first_name == "" ||
+                EditClient.first_name == null ||
+                EditClient.email == "")
                 {
                     ErrorEnable = "Visible";
                     return;
@@ -55,26 +55,20 @@ namespace Shop
                 else
                 {
                     ErrorEnable = "Hidden";
-
-                    var updateClient = $"update client_info " +
-                    $"set surname = N'{EditClient.Surname}'," +
-                    $"first_name = N'{EditClient.FirstName}'," +
-                    $"patronymic = N'{EditClient.Patronymic}'," +
-                    $"phone_number = N'{EditClient.PhoneNumber}'," +
-                    $"email = N'{EditClient.Email}'" +
-                    $"where id={EditClient.Id}";
-
-                    var updateClientProducts = $"update products set email = '{EditClient.Email}' where email='{CurrentClient.Email}'";
-
                     MSDbConnection clientDBConnection = new MSDbConnection();
                     using (clientDBConnection.Connection)
                     {
                         try
                         {
                             clientDBConnection.Connection.Open();
-                            SqlDataAdapter dataAdapterMS = new SqlDataAdapter();
-                            dataAdapterMS.UpdateCommand = new SqlCommand(updateClient, clientDBConnection.Connection);
-                            dataAdapterMS.UpdateCommand.ExecuteNonQuery();
+                            MSSQLLocalDBEntities clientsDB = new MSSQLLocalDBEntities();
+                            var clientForUpdate = clientsDB.client_info.Where(e=>e.id == EditClient.id).First();
+                            clientForUpdate.surname = EditClient.surname;
+                            clientForUpdate.first_name = EditClient.first_name;
+                            clientForUpdate.patronymic = EditClient.patronymic;
+                            clientForUpdate.phone_number = EditClient.phone_number;
+                            clientForUpdate.email = EditClient.email;
+                            clientsDB.SaveChanges();
                         }
                         catch (Exception e)
                         {
@@ -88,9 +82,13 @@ namespace Shop
                         try
                         {
                             productsConnection.Connection.Open();
-                            OleDbDataAdapter dataAdapterAccess = new OleDbDataAdapter();
-                            dataAdapterAccess.UpdateCommand = new OleDbCommand(updateClientProducts, productsConnection.Connection);
-                            dataAdapterAccess.UpdateCommand.ExecuteNonQuery();
+                            ProductsDB productsDB = new ProductsDB();
+                            var productsForUpdate = productsDB.Products.Where(e => e.Email == CurrentClient.email);
+                            foreach (var item in productsForUpdate)
+                            {
+                                item.Email = EditClient.email;
+                            }
+                            productsDB.SaveChanges();
                         }
                         catch (Exception e)
                         {
